@@ -15,8 +15,8 @@ public class FizzBuzzController {
     public final FizzBuzzService fizzBuzzService;
 
     @GetMapping
-    public ResponseDTO<String> fizzBuzzEndpoint(@RequestParam(required = false) Integer entry) {
-        return ResponseDTO.<String>builder()
+    public ResponseDTO<Object> fizzBuzzEndpoint(@RequestParam(required = false) Integer entry) {
+        return ResponseDTO.builder()
                 .withData(fizzBuzzService.calculateEntry(entry))
                 .build();
     }

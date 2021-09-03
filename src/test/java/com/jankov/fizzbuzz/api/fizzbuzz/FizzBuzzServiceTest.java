@@ -8,8 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import java.util.Map;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class FizzBuzzServiceTest {
 
     @InjectMocks
@@ -28,9 +31,33 @@ class FizzBuzzServiceTest {
     }
 
     @Test
+    void whenEntryIsOnlyMultipleOf7() {
+        var result = fizzBuzzService.calculateEntry(generateNumberMultipleOnlyBy7());
+        assertEquals(BAZZ, result);
+    }
+
+    @Test
     void whenEntryIsMultipleOf3And5() {
         var result = fizzBuzzService.calculateEntry(generateNumberMultipleBy(of(3, true, 5, true)));
         assertEquals((FIZZ + BUZZ).toLowerCase(), result);
+    }
+
+    @Test
+    void whenEntryIsMultipleOf3And7() {
+        var result = fizzBuzzService.calculateEntry(generateNumberMultipleOnlyBy3());
+        assertEquals(FIZZ + BAZZ, result);
+    }
+
+    @Test
+    void whenEntryIsMultipleOf5And7() {
+        var result = fizzBuzzService.calculateEntry(generateNumberMultipleOnlyBy3());
+        assertEquals(BUZZ + BAZZ, result);
+    }
+
+    @Test
+    void whenEntryIsMultipleOf3And5And7() {
+        var result = fizzBuzzService.calculateEntry(generateNumberMultipleOnlyBy3());
+        assertEquals(FIZZ + BUZZ + BAZZ, result);
     }
 
     @Test
@@ -40,40 +67,55 @@ class FizzBuzzServiceTest {
                     int value = generateNumberMultipleOnlyBy3();
                     assertEquals(0, value % 3);
                     assertNotEquals(0, value % 5);
+                    assertNotEquals(0, value % 7);
                 });
 
         IntStream.range(0, 10)
                 .forEach(i -> {
                     var value = generateNumberMultipleBy(of(
                             3, true,
-                            5, true
+                            5, true,
+                            7, false
                     ));
                     assertEquals(0, value % 3);
                     assertEquals(0, value % 5);
+                    assertNotEquals(0, value % 7);
                 });
 
         IntStream.range(0, 10)
                 .forEach(i -> {
                     var value = generateNumberMultipleBy(of(
                             3, true,
-                            5, true
+                            5, true,
+                            7, true
                     ));
                     assertEquals(0, value % 3);
                     assertEquals(0, value % 5);
+                    assertEquals(0, value % 7);
                 });
     }
 
     private Integer generateNumberMultipleOnlyBy3() {
         return generateNumberMultipleBy(of(
                 3, true,
-                5, false
+                5, false,
+                7, false
         ));
     }
 
     private Integer generateNumberMultipleOnlyBy5() {
         return generateNumberMultipleBy(of(
                 3, false,
-                5, true
+                5, true,
+                7, false
+        ));
+    }
+
+    private Integer generateNumberMultipleOnlyBy7() {
+        return generateNumberMultipleBy(of(
+                3, false,
+                5, false,
+                7, false
         ));
     }
 
