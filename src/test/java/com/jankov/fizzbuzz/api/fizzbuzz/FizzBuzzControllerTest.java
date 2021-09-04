@@ -1,7 +1,6 @@
 package com.jankov.fizzbuzz.api.fizzbuzz;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -62,10 +61,16 @@ class FizzBuzzControllerTest {
 
     @Test
     void resultIsArrayWhenEntryIsMissing() throws Exception {
-        when(service.calculateEntry(eq(null))).thenReturn(new Object[] {1, 2, "fizz", 4, "buzz"});
+        var array = new Object[] {1, 2, "fizz", 4, "buzz"};
+        when(service.calculateEntry(eq(null))).thenReturn(array);
         mockMvc.perform(get("/fizzbuzz"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data", hasSize(5)))
-                .andExpect(jsonPath("$.data", is(Arrays.array(1, 2, "fizz", 4, "buzz"))));
+                .andExpect(jsonPath("$.data", hasItem(1)))
+                .andExpect(jsonPath("$.data", hasItem(2)))
+                .andExpect(jsonPath("$.data", hasItem("fizz")))
+                .andExpect(jsonPath("$.data", hasItem(4)))
+                .andExpect(jsonPath("$.data", hasItem("buzz")));
     }
 }

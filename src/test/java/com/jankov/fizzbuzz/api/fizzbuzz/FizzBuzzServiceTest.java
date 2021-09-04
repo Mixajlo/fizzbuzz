@@ -1,12 +1,10 @@
 package com.jankov.fizzbuzz.api.fizzbuzz;
 
+import static com.jankov.fizzbuzz.RandomNumberGeneratorTest.*;
 import static com.jankov.fizzbuzz.api.fizzbuzz.FizzBuzzConstants.*;
 import static java.util.Map.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-import java.util.Map;
-import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,110 +36,36 @@ class FizzBuzzServiceTest {
 
     @Test
     void whenEntryIsMultipleOf3And5() {
-        var result = fizzBuzzService.calculateEntry(generateNumberMultipleBy(of(3, true, 5, true)));
+        var result = fizzBuzzService.calculateEntry(
+                generateNumberMultipleBy(of(3, true, 5, true, 7, false)));
         assertEquals((FIZZ + BUZZ).toLowerCase(), result);
     }
 
     @Test
     void whenEntryIsMultipleOf3And7() {
-        var result = fizzBuzzService.calculateEntry(generateNumberMultipleOnlyBy3());
+        var result = fizzBuzzService.calculateEntry(
+                generateNumberMultipleBy(of(3, true, 5, false, 7, true)));
         assertEquals(FIZZ + BAZZ, result);
     }
 
     @Test
     void whenEntryIsMultipleOf5And7() {
-        var result = fizzBuzzService.calculateEntry(generateNumberMultipleOnlyBy3());
+        var result = fizzBuzzService.calculateEntry(
+                generateNumberMultipleBy(of(3, false, 5, true, 7, true)));
         assertEquals(BUZZ + BAZZ, result);
     }
 
     @Test
     void whenEntryIsMultipleOf3And5And7() {
-        var result = fizzBuzzService.calculateEntry(generateNumberMultipleOnlyBy3());
+        var result = fizzBuzzService.calculateEntry(
+                generateNumberMultipleBy(of(3, true, 5, true, 7, true)));
         assertEquals(FIZZ + BUZZ + BAZZ, result);
     }
 
     @Test
-    void verifyNumberGeneratorProvidesCorrectValues() {
-        IntStream.range(0, 10)
-                .forEach(i -> {
-                    int value = generateNumberMultipleOnlyBy3();
-                    assertEquals(0, value % 3);
-                    assertNotEquals(0, value % 5);
-                    assertNotEquals(0, value % 7);
-                });
-
-        IntStream.range(0, 10)
-                .forEach(i -> {
-                    var value = generateNumberMultipleBy(of(
-                            3, true,
-                            5, true,
-                            7, false
-                    ));
-                    assertEquals(0, value % 3);
-                    assertEquals(0, value % 5);
-                    assertNotEquals(0, value % 7);
-                });
-
-        IntStream.range(0, 10)
-                .forEach(i -> {
-                    var value = generateNumberMultipleBy(of(
-                            3, true,
-                            5, true,
-                            7, true
-                    ));
-                    assertEquals(0, value % 3);
-                    assertEquals(0, value % 5);
-                    assertEquals(0, value % 7);
-                });
-    }
-
-    private Integer generateNumberMultipleOnlyBy3() {
-        return generateNumberMultipleBy(of(
-                3, true,
-                5, false,
-                7, false
-        ));
-    }
-
-    private Integer generateNumberMultipleOnlyBy5() {
-        return generateNumberMultipleBy(of(
-                3, false,
-                5, true,
-                7, false
-        ));
-    }
-
-    private Integer generateNumberMultipleOnlyBy7() {
-        return generateNumberMultipleBy(of(
-                3, false,
-                5, false,
-                7, false
-        ));
-    }
-
-    private int generateNumberMultipleBy(Map<Integer, Boolean> multipliers) {
-        var productOfMultipliers = calculateProductOfMultipliers(multipliers);
-        int value = (int) (Math.random() * 10000) * productOfMultipliers;
-        System.out.println("Generated value " + value);
-        while (isValueNonDividableAgainstNonMultipliers(value, multipliers)) {
-            System.out.println("Miss. Incrementing value by " + productOfMultipliers);
-            value += productOfMultipliers;
-        }
-        System.out.println(value);
-        return value;
-    }
-
-    private Integer calculateProductOfMultipliers(Map<Integer, Boolean> multipliers) {
-        return multipliers.keySet().stream().filter(multipliers::get).reduce(1, (a, b) -> a * b);
-    }
-
-    private boolean isValueNonDividableAgainstNonMultipliers(int value, Map<Integer, Boolean> multipliers) {
-        boolean result = false;
-        for (Integer multiplier : multipliers.keySet()) {
-            if (!multipliers.get(multiplier)) {
-                result |= (value % multiplier == 0);
-            }
-        }
-        return result;
+    void whenEntryIsNotMultipleOf3And5And7() {
+        var entry = generateNumberMultipleBy(of(3, false, 5, false, 7, false));
+        var result = fizzBuzzService.calculateEntry(entry);
+        assertEquals(entry, result);
     }
 }
